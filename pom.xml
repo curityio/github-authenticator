@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <repositories>
+        <repository>
+            <id>customer-release-repo</id>
+            <url>https://nexus.curity.se/nexus/content/repositories/customer-release-repo</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <groupId>io.curity.identityserver.plugin</groupId>
+    <artifactId>identityserver.plugins.authenticators.github</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <name>Github Authenticator</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <libPluginsDir>lib/plugins/authenticator-github</libPluginsDir>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <outputDirectory>${DIST_DIR}/${libPluginsDir}</outputDirectory>
+                    <archive>
+                        <manifestEntries>
+                            <Implementation-Title>Github-Authenticator-Plugin</Implementation-Title>
+                            <Implementation-Vendor>Curity AB</Implementation-Vendor>
+                            <Plugin-Namespace>https://curity.se/ns/conf/authenticators/github</Plugin-Namespace>
+                            <Plugin-Prefix>github</Plugin-Prefix>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>se.curity.identityserver</groupId>
+            <artifactId>identityserver.sdk</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.22</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+            <version>1.0-rc2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.curity.identityserver.plugin</groupId>
+            <artifactId>identityserver.plugins.authenticators</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+    </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>curity-release-repo</id>
+            <name>Curity Nexus Release Repository</name>
+            <url>https://nexus.curity.se/nexus/content/repositories/twobo-release-repo/</url>
+        </repository>
+    </distributionManagement>
+
+</project>
