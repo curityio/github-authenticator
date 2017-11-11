@@ -17,6 +17,7 @@
 package io.curity.identityserver.plugin.github.config;
 
 import se.curity.identityserver.sdk.config.Configuration;
+import se.curity.identityserver.sdk.config.annotation.DefaultBoolean;
 import se.curity.identityserver.sdk.config.annotation.DefaultString;
 import se.curity.identityserver.sdk.config.annotation.DefaultURI;
 import se.curity.identityserver.sdk.config.annotation.Description;
@@ -47,6 +48,14 @@ public interface GithubAuthenticatorPluginConfig extends Configuration {
     @Description("URL to the Github user info endpoint")
     @DefaultURI("https://api.github.com/user")
     URI getUserInfoEndpoint();
+
+    @Description("Name of the organization to check that the user is a member of")
+    @DefaultString("")
+    String getOrganizationName();
+
+    @Description("Whether or not the list of teams should be fetched from GitHub")
+    @DefaultBoolean(false)
+    Boolean getEnableFetchTeamsList();
 
     SessionManager getSessionManager();
 

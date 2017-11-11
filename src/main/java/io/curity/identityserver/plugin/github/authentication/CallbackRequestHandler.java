@@ -19,24 +19,43 @@ package io.curity.identityserver.plugin.github.authentication;
 import io.curity.identityserver.plugin.authentication.CodeFlowOAuthClient;
 import io.curity.identityserver.plugin.authentication.OAuthClient;
 import io.curity.identityserver.plugin.github.config.GithubAuthenticatorPluginConfig;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.curity.identityserver.sdk.attribute.Attribute;
 import se.curity.identityserver.sdk.authentication.AuthenticationResult;
 import se.curity.identityserver.sdk.authentication.AuthenticatorRequestHandler;
+import se.curity.identityserver.sdk.errors.ErrorCode;
+import se.curity.identityserver.sdk.http.HttpStatus;
 import se.curity.identityserver.sdk.service.ExceptionFactory;
 import se.curity.identityserver.sdk.service.Json;
 import se.curity.identityserver.sdk.service.authentication.AuthenticatorInformationProvider;
 import se.curity.identityserver.sdk.web.Request;
 import se.curity.identityserver.sdk.web.Response;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
+import static io.curity.identityserver.plugin.authentication.Constants.BEARER;
 import static io.curity.identityserver.plugin.authentication.Constants.Params.PARAM_ACCESS_TOKEN;
+import static io.curity.identityserver.plugin.authentication.OAuthClient.notNullOrEmpty;
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
 public class CallbackRequestHandler
         implements AuthenticatorRequestHandler<CallbackGetRequestModel> {
+    private static final Logger _logger = LoggerFactory.getLogger(CallbackRequestHandler.class);
+
     private final ExceptionFactory _exceptionFactory;
     private final OAuthClient _oauthClient;
     private final GithubAuthenticatorPluginConfig _config;
+    private final HttpClient _client;
+
+    private static final String organizationMemberCheckUrl = "https://api.github.com/orgs/";
+    private static final String LOGIN = "login";
 
     public CallbackRequestHandler(ExceptionFactory exceptionFactory,
                                   AuthenticatorInformationProvider provider,
@@ -45,6 +64,7 @@ public class CallbackRequestHandler
         _exceptionFactory = exceptionFactory;
         _oauthClient = new CodeFlowOAuthClient(exceptionFactory, provider, json, config.getSessionManager());
         _config = config;
+        _client = HttpClientBuilder.create().build();
     }
 
     @Override
@@ -66,7 +86,33 @@ public class CallbackRequestHandler
                 _config.getClientSecret(),
                 requestModel.getCode(),
                 requestModel.getState());
-        return _oauthClient.getAuthenticationResult(tokenMap.get(PARAM_ACCESS_TOKEN).toString(), _config.getUserInfoEndpoint().toString());
+        Optional<AuthenticationResult> authenticationResult = _oauthClient.getAuthenticationResult(tokenMap.get(PARAM_ACCESS_TOKEN).toString(), _config.getUserInfoEndpoint().toString());
+        checkUserOrganizationMembership(authenticationResult, tokenMap.get(PARAM_ACCESS_TOKEN).toString());
+        return authenticationResult;
+    }
+
+    private void checkUserOrganizationMembership(Optional<AuthenticationResult> authenticationResult, String accessToken) {
+        Attribute loginAttrubute = authenticationResult.get().getAttributes().getSubjectAttributes().get(LOGIN);
+        String username = null;
+        if (loginAttrubute != null) {
+            username = loginAttrubute.getValue().toString();
+        }
+        if (notNullOrEmpty(username) && notNullOrEmpty(_config.getOrganizationName())) {
+            HttpGet getRequest = new HttpGet(organizationMemberCheckUrl + _config.getOrganizationName() + "/members/" + username);
+            getRequest.addHeader(AUTHORIZATION, BEARER+accessToken);
+
+            try {
+                HttpResponse response = _client.execute(getRequest);
+                if (response.getStatusLine().getStatusCode() == HttpStatus.NOT_FOUND.getCode()) {
+                    _oauthClient.redirectToAuthenticationOnError("org_not_found","ACCESS DENIED TO ORGANIZATION", _config.id());
+                }
+
+            } catch (IOException e) {
+                _logger.warn("Could not communicate with organization endpoint", e);
+
+                throw _exceptionFactory.internalServerException(ErrorCode.EXTERNAL_SERVICE_ERROR, "Authentication failed");
+            }
+        }
     }
 
     @Override
