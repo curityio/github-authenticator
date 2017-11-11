@@ -53,10 +53,6 @@ public interface GithubAuthenticatorPluginConfig extends Configuration {
     @DefaultString("")
     String getOrganizationName();
 
-    @Description("Whether or not the list of teams should be fetched from GitHub")
-    @DefaultBoolean(false)
-    Boolean getEnableFetchTeamsList();
-
     SessionManager getSessionManager();
 
 }
