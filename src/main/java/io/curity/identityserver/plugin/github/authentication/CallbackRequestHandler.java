@@ -43,6 +43,8 @@ import java.util.Optional;
 import static io.curity.identityserver.plugin.authentication.Constants.BEARER;
 import static io.curity.identityserver.plugin.authentication.Constants.Params.PARAM_ACCESS_TOKEN;
 import static io.curity.identityserver.plugin.authentication.OAuthClient.notNullOrEmpty;
+import static io.curity.identityserver.plugin.github.authentication.Constants.LOGIN;
+import static io.curity.identityserver.plugin.github.authentication.Constants.ORGANIZATION_MEMBER_CHECK_URL;
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
 public class CallbackRequestHandler
@@ -53,9 +55,6 @@ public class CallbackRequestHandler
     private final OAuthClient _oauthClient;
     private final GithubAuthenticatorPluginConfig _config;
     private final HttpClient _client;
-
-    private static final String organizationMemberCheckUrl = "https://api.github.com/orgs/";
-    private static final String LOGIN = "login";
 
     public CallbackRequestHandler(ExceptionFactory exceptionFactory,
                                   AuthenticatorInformationProvider provider,
@@ -98,13 +97,13 @@ public class CallbackRequestHandler
             username = loginAttrubute.getValue().toString();
         }
         if (notNullOrEmpty(username) && notNullOrEmpty(_config.getOrganizationName())) {
-            HttpGet getRequest = new HttpGet(organizationMemberCheckUrl + _config.getOrganizationName() + "/members/" + username);
-            getRequest.addHeader(AUTHORIZATION, BEARER+accessToken);
+            HttpGet getRequest = new HttpGet(ORGANIZATION_MEMBER_CHECK_URL + _config.getOrganizationName() + "/members/" + username);
+            getRequest.addHeader(AUTHORIZATION, BEARER + accessToken);
 
             try {
                 HttpResponse response = _client.execute(getRequest);
                 if (response.getStatusLine().getStatusCode() == HttpStatus.NOT_FOUND.getCode()) {
-                    _oauthClient.redirectToAuthenticationOnError("org_not_found","ACCESS DENIED TO ORGANIZATION", _config.id());
+                    _oauthClient.redirectToAuthenticationOnError("org_not_found", "ACCESS DENIED TO ORGANIZATION", _config.id());
                 }
 
             } catch (IOException e) {

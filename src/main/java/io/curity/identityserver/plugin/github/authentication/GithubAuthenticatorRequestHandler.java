@@ -34,6 +34,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import static io.curity.identityserver.plugin.authentication.Constants.Params.PARAM_REDIRECT_URI;
+import static io.curity.identityserver.plugin.authentication.OAuthClient.notNullOrEmpty;
+import static io.curity.identityserver.plugin.github.authentication.Constants.SCOPE_ORG_ADMIN;
+import static io.curity.identityserver.plugin.github.authentication.Constants.SCOPE_ORG_READ;
+import static io.curity.identityserver.plugin.github.authentication.Constants.SCOPE_ORG_WRITE;
 
 public class GithubAuthenticatorRequestHandler implements AuthenticatorRequestHandler<RequestModel> {
     private static final Logger _logger = LoggerFactory.getLogger(GithubAuthenticatorRequestHandler.class);
@@ -42,9 +46,9 @@ public class GithubAuthenticatorRequestHandler implements AuthenticatorRequestHa
     private final OAuthClient _oauthClient;
 
     public GithubAuthenticatorRequestHandler(GithubAuthenticatorPluginConfig config,
-                                               ExceptionFactory exceptionFactory,
-                                               Json json,
-                                               AuthenticatorInformationProvider provider) {
+                                             ExceptionFactory exceptionFactory,
+                                             Json json,
+                                             AuthenticatorInformationProvider provider) {
         _config = config;
         _oauthClient = new CodeFlowOAuthClient(exceptionFactory, provider, json, config.getSessionManager());
     }
@@ -71,11 +75,15 @@ public class GithubAuthenticatorRequestHandler implements AuthenticatorRequestHa
         ImmutableMap.Builder<String, String> builder = ImmutableMap.<String, String>builder()
                 .putAll(extraAuthorizeParameters);
 
-
+        String scope = _config.getScope().toLowerCase();
+        if (notNullOrEmpty(_config.getOrganizationName()) && !(scope.contains(SCOPE_ORG_ADMIN) || scope.contains(SCOPE_ORG_WRITE) || scope.contains(SCOPE_ORG_READ))) {
+            scope += " " + SCOPE_ORG_READ;
+        }
         _oauthClient.redirectToAuthorizationEndpoint(response,
                 _config.getAuthorizationEndpoint().toString(),
                 _config.getClientId(),
-                _config.getScope(), builder.build());
+                scope,
+                builder.build());
 
         return Optional.empty();
     }
