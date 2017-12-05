@@ -61,7 +61,7 @@ Following jars must be in plugin group classpath.
 -  `google-collections-1.0-rc2.jar`_
 -  `httpclient-4.5.jar`_
 -  `httpcore-4.4.1.jar`_
--  `identityserver.plugins.authenticators-1.0.0.jar`_
+-  `identityserver.plugins.oauth.authenticators-utility-1.0.0.jar`_
 
 Please visit `curity.io`_ for more information about the Curity Identity
 Server.
@@ -73,5 +73,5 @@ Server.
 .. _google-collections-1.0-rc2.jar: http://central.maven.org/maven2/com/google/collections/google-collections/1.0-rc2/google-collections-1.0-rc2.jar
 .. _httpclient-4.5.jar: http://central.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5/httpclient-4.5.jar
 .. _httpcore-4.4.1.jar: http://central.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.1/httpcore-4.4.1.jar
-.. _identityserver.plugins.authenticators-1.0.0.jar: https://github.com/curityio/authenticator-plugin
+.. _identityserver.plugins.oauth.authenticators-utility-1.0.0.jar: https://github.com/curityio/oauth-authenticator-utility-plugin
 .. _curity.io: https://curity.io/

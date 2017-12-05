@@ -73,7 +73,7 @@
         </dependency>
         <dependency>
             <groupId>io.curity.identityserver.plugin</groupId>
-            <artifactId>identityserver.plugins.authenticators</artifactId>
+            <artifactId>identityserver.plugins.oauth.authenticators-utility</artifactId>
             <version>1.0.0</version>
         </dependency>
 
