@@ -17,7 +17,7 @@
 package io.curity.identityserver.plugin.github.authentication;
 
 import com.google.common.collect.ImmutableMap;
-import io.curity.identityserver.plugin.authentication.CodeFlowOAuthClient;
+import io.curity.identityserver.plugin.authentication.DefaultOAuthClient;
 import io.curity.identityserver.plugin.authentication.OAuthClient;
 import io.curity.identityserver.plugin.github.config.GithubAuthenticatorPluginConfig;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class GithubAuthenticatorRequestHandler implements AuthenticatorRequestHa
                                              Json json,
                                              AuthenticatorInformationProvider provider) {
         _config = config;
-        _oauthClient = new CodeFlowOAuthClient(exceptionFactory, provider, json, config.getSessionManager());
+        _oauthClient = new DefaultOAuthClient(exceptionFactory, provider, json, config.getSessionManager());
     }
 
     @Override
