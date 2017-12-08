@@ -19,6 +19,7 @@ package io.curity.identityserver.plugin.github.authentication;
 import com.google.common.collect.ImmutableMap;
 import io.curity.identityserver.plugin.authentication.DefaultOAuthClient;
 import io.curity.identityserver.plugin.authentication.OAuthClient;
+import io.curity.identityserver.plugin.authentication.RequestModel;
 import io.curity.identityserver.plugin.github.config.GithubAuthenticatorPluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
