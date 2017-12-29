@@ -17,13 +17,21 @@
 package io.curity.identityserver.plugin.github.config;
 
 import se.curity.identityserver.sdk.config.Configuration;
+import se.curity.identityserver.sdk.config.OneOf;
 import se.curity.identityserver.sdk.config.annotation.DefaultBoolean;
+import se.curity.identityserver.sdk.config.annotation.DefaultEnum;
 import se.curity.identityserver.sdk.config.annotation.DefaultString;
 import se.curity.identityserver.sdk.config.annotation.DefaultURI;
 import se.curity.identityserver.sdk.config.annotation.Description;
+import se.curity.identityserver.sdk.service.ExceptionFactory;
+import se.curity.identityserver.sdk.service.HttpClient;
+import se.curity.identityserver.sdk.service.Json;
 import se.curity.identityserver.sdk.service.SessionManager;
+import se.curity.identityserver.sdk.service.WebServiceClientFactory;
+import se.curity.identityserver.sdk.service.authentication.AuthenticatorInformationProvider;
 
 import java.net.URI;
+import java.util.Optional;
 
 @SuppressWarnings("InterfaceNeverImplemented")
 public interface GithubAuthenticatorPluginConfig extends Configuration {
@@ -33,26 +41,40 @@ public interface GithubAuthenticatorPluginConfig extends Configuration {
     @Description("Secret key used for communication with github")
     String getClientSecret();
 
-    @Description("URL to the Github authorization endpoint")
-    @DefaultURI("https://github.com/login/oauth/authorize")
-    URI getAuthorizationEndpoint();
-
     @Description("URL to the Github token endpoint")
     @DefaultURI("https://github.com/login/oauth/access_token")
     URI getTokenEndpoint();
-
-    @Description("A space-separated list of scopes to request from Github")
-    @DefaultString("")
-    String getScope();
 
     @Description("URL to the Github user info endpoint")
     @DefaultURI("https://api.github.com/user")
     URI getUserInfoEndpoint();
 
-    @Description("Name of the organization to check that the user is a member of")
-    @DefaultString("")
-    String getOrganizationName();
+    Optional<ManageOrganization> getManageOrganization();
 
+    WebServiceClientFactory getWebServiceClientFactory();
+
+    interface ManageOrganization
+    {
+
+        @Description("Name of the organization to check that the user is a member of")
+        String getOrganizationName();
+        Access getAccess();
+        @DefaultEnum("READ")
+        enum Access
+        {
+            WRITE, READ, READ_WRITE;
+
+        }
+    }
+    // Services that don't require any configuration
+
+    Json getJson();
+    
     SessionManager getSessionManager();
 
+    Optional<HttpClient> getHttpClient();
+
+    ExceptionFactory getExceptionFactory();
+
+    AuthenticatorInformationProvider getAuthenticatorInformationProvider();
 }
