@@ -161,24 +161,24 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         HttpResponse tokenResponse = getWebServiceClient("https://github.com/login/oauth/access_token")
                 .request()
                 .contentType("application/x-www-form-urlencoded")
+                .accept("application/json")
                 .body(createFormUrlEncodedBodyProcessor(createPostData(_config.getClientId(),
                         _config.getClientSecret(), requestModel.getCode(), requestModel.getRequestUrl())))
                 .post()
                 .response();
         int statusCode = tokenResponse.statusCode();
+        String body = tokenResponse.body(HttpResponse.asString());
 
         if (statusCode != 200)
         {
-            if (_logger.isInfoEnabled())
-            {
-                _logger.info("Got error response from token endpoint: error = {}, {}", statusCode,
-                        tokenResponse.body(HttpResponse.asString()));
-            }
+            _logger.info("Got error response from token endpoint: error = {}, {}", statusCode, body);
 
             throw _exceptionFactory.internalServerException(ErrorCode.EXTERNAL_SERVICE_ERROR);
         }
 
-        return _json.fromJson(tokenResponse.body(HttpResponse.asString()));
+        _logger.debug("Body of token response from GitHub: {}", body);
+
+        return _json.fromJson(body);
     }
 
     private static Map<String, String> createPostData(String clientId, String clientSecret, String code, String callbackUri)
