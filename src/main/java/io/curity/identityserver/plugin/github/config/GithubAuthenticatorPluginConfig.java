@@ -41,24 +41,19 @@ public interface GithubAuthenticatorPluginConfig extends Configuration {
     @Description("Secret key used for communication with github")
     String getClientSecret();
 
-    @Description("URL to the Github token endpoint")
-    @DefaultURI("https://github.com/login/oauth/access_token")
-    URI getTokenEndpoint();
-
-    @Description("URL to the Github user info endpoint")
-    @DefaultURI("https://api.github.com/user")
-    URI getUserInfoEndpoint();
-
+    @Description("Enable the application to manage an organization in GitHub")
     Optional<ManageOrganization> getManageOrganization();
 
     WebServiceClientFactory getWebServiceClientFactory();
 
     interface ManageOrganization
     {
-
         @Description("Name of the organization to check that the user is a member of")
         String getOrganizationName();
+
+        @Description("The level of access to the organization's data that the application requires")
         Access getAccess();
+
         @DefaultEnum("READ")
         enum Access
         {
@@ -66,6 +61,7 @@ public interface GithubAuthenticatorPluginConfig extends Configuration {
 
         }
     }
+    
     // Services that don't require any configuration
 
     Json getJson();
