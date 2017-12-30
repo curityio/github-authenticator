@@ -136,14 +136,23 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
     private WebServiceClient getWebServiceClient(String uri)
     {
         Optional<HttpClient> httpClient = _config.getHttpClient();
+        URI u = URI.create(uri);
 
         if (httpClient.isPresent())
         {
-            return _webServiceClientFactory.create(httpClient.get()).withHost(URI.create(uri).getHost());
+            HttpClient h = httpClient.get();
+
+            if (!Objects.equals(h.getScheme(), u.getScheme()))
+            {
+                _logger.debug("HTTP client was configured with the scheme {} but {} was expected. Ensure that the " +
+                        "configuration is correct.", h.getScheme(), u.getScheme());
+            }
+
+            return _webServiceClientFactory.create(h).withHost(u.getHost());
         }
         else
         {
-            return _webServiceClientFactory.create(URI.create(uri));
+            return _webServiceClientFactory.create(u);
         }
     }
 
