@@ -21,10 +21,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.Nullable;
 import se.curity.identityserver.sdk.attribute.Attribute;
+import se.curity.identityserver.sdk.attribute.Attributes;
+import se.curity.identityserver.sdk.attribute.AuthenticationAttributes;
+import se.curity.identityserver.sdk.attribute.ContextAttributes;
+import se.curity.identityserver.sdk.attribute.SubjectAttributes;
+import se.curity.identityserver.sdk.attribute.scim.v2.Name;
+import se.curity.identityserver.sdk.attribute.scim.v2.multivalued.Photo;
 import se.curity.identityserver.sdk.authentication.AuthenticationResult;
 import se.curity.identityserver.sdk.authentication.AuthenticatorRequestHandler;
 import se.curity.identityserver.sdk.errors.ErrorCode;
 import se.curity.identityserver.sdk.http.HttpResponse;
+import se.curity.identityserver.sdk.http.HttpStatus;
 import se.curity.identityserver.sdk.service.ExceptionFactory;
 import se.curity.identityserver.sdk.service.HttpClient;
 import se.curity.identityserver.sdk.service.Json;
@@ -88,15 +95,46 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         @Nullable Object accessToken = tokenResponseData.get("access_token");
         Map<String, String> userInfoResponseData = getUserInfo(accessToken);
         List<Attribute> subjectAttributes = new LinkedList<>(), contextAttributes = new LinkedList<>();
+        String login = userInfoResponseData.get("login");
 
-        // TODO: Build attribute collections
+        subjectAttributes.add(Attribute.of("subject",  login));
+        subjectAttributes.add(Attribute.of("name", Name.of(userInfoResponseData.get("name"))));
+        subjectAttributes.add(Attribute.of("photo", Photo.of(userInfoResponseData.get("avatar_url"), false)));
+        subjectAttributes.add(Attribute.of("repos_url", userInfoResponseData.get("repos_url")));
+        subjectAttributes.add(Attribute.of("gists_url", userInfoResponseData.get("gists_url")));
+        subjectAttributes.add(Attribute.of("following_url", userInfoResponseData.get("following_url")));
+        subjectAttributes.add(Attribute.of("bio", userInfoResponseData.get("bio")));
+        subjectAttributes.add(Attribute.of("starred_url", userInfoResponseData.get("starred_url")));
+        subjectAttributes.add(Attribute.of("blog", userInfoResponseData.get("blog")));
+        subjectAttributes.add(Attribute.of("url", userInfoResponseData.get("url")));
+        subjectAttributes.add(Attribute.of("subscriptions_url", userInfoResponseData.get("subscriptions_url")));
+        subjectAttributes.add(Attribute.of("received_events_url", userInfoResponseData.get("received_events_url")));
+        subjectAttributes.add(Attribute.of("events_url", userInfoResponseData.get("events_url")));
+        subjectAttributes.add(Attribute.of("html_url", userInfoResponseData.get("html_url")));
+        subjectAttributes.add(Attribute.of("location", userInfoResponseData.get("location")));
+        subjectAttributes.add(Attribute.of("company", userInfoResponseData.get("company")));
+        subjectAttributes.add(Attribute.of("gravatar_id", userInfoResponseData.get("gravatar_id")));
+        subjectAttributes.add(Attribute.of("organizations_url", userInfoResponseData.get("organizations_url")));
+        _config.getManageOrganization().ifPresent(manageOrganization -> {
+            manageOrganization.getOrganizationName().ifPresent(organizationName -> {
+                subjectAttributes.add(Attribute.of("organization_name", organizationName));
+            });
+        });
 
-        // FIXME: Org check
-        //checkUserOrganizationMembership(authenticationResult, tokenMap.get(PARAM_ACCESS_TOKEN).toString());
+        checkUserOrganizationMembership(userInfoResponseData.get("login"), accessToken.toString());
 
-        // TODO: Send back actual authentication result
+        contextAttributes.add(Attribute.of("created_at", userInfoResponseData.get("created_at")));
+        contextAttributes.add(Attribute.of("updated_at", userInfoResponseData.get("updated_at")));
+        contextAttributes.add(Attribute.of("user_type", userInfoResponseData.get("type")));
+        contextAttributes.add(Attribute.of("github_access_token", Objects.toString(accessToken)));
+        contextAttributes.add(Attribute.of("github_token_type", Objects.toString(tokenResponseData.get("token_type"), null)));
+        contextAttributes.add(Attribute.of("granted_scopes", Objects.toString(tokenResponseData.get("scope"), null)));
 
-        return Optional.empty();
+        AuthenticationAttributes authenticationAttributes = AuthenticationAttributes.of(
+                SubjectAttributes.of(login, Attributes.of(subjectAttributes)),
+                ContextAttributes.of(contextAttributes));
+
+        return Optional.of(new AuthenticationResult(authenticationAttributes));
     }
 
     private Map<String, String> getUserInfo(@Nullable Object accessToken)
@@ -194,40 +232,25 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         return data;
     }
 
-//    private void checkUserOrganizationMembership(Optional<AuthenticationResult> authenticationResult, String
-//            accessToken)
-//    {
-//        Attribute loginAttrubute = authenticationResult.get().getAttributes().getSubjectAttributes().get(LOGIN);
-//        String username = null;
-//        if (loginAttrubute != null)
-//        {
-//            username = loginAttrubute.getValue().toString();
-//        }
-//        if (notNullOrEmpty(username) && notNullOrEmpty(_config.getOrganizationName()))
-//        {
-//            HttpGet getRequest = new HttpGet(ORGANIZATION_MEMBER_CHECK_URL + _config.getOrganizationName() +
-//                    "/members/" + username);
-//            getRequest.addHeader(AUTHORIZATION, BEARER + accessToken);
-//
-//            try
-//            {
-//                HttpResponse response = _client.execute(getRequest);
-//                if (response.getStatusLine().getStatusCode() == HttpStatus.NOT_FOUND.getCode())
-//                {
-//                    _oauthClient.redirectToAuthenticationOnError("org_not_found", "ACCESS DENIED TO ORGANIZATION",
-//                            _config.id());
-//                }
-//
-//            }
-//            catch (IOException e)
-//            {
-//                _logger.warn("Could not communicate with organization endpoint", e);
-//
-//                throw _exceptionFactory.internalServerException(ErrorCode.EXTERNAL_SERVICE_ERROR, "Authentication " +
-//                        "failed");
-//            }
-//        }
-//    }
+    private void checkUserOrganizationMembership(String username, String accessToken)
+    {
+        _config.getManageOrganization().ifPresent(manageOrganization -> {
+            manageOrganization.getOrganizationName().ifPresent(organziationName -> {
+                HttpResponse tokenResponse = getWebServiceClient("https://api.github.com/orgs/" + organziationName + "/members/" + username)
+                        .request()
+                        .accept("application/json")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .get()
+                        .response();
+                int statusCode = tokenResponse.statusCode();
+                if (tokenResponse.statusCode() == HttpStatus.NOT_FOUND.getCode()) {
+                    _logger.info("Got error response from user organization membership: error = {}", statusCode);
+
+                    throw _exceptionFactory.internalServerException(ErrorCode.EXTERNAL_SERVICE_ERROR);
+                }
+            });
+        });
+    }
 
     @Override
     public Optional<AuthenticationResult> post(CallbackGetRequestModel requestModel, Response response)

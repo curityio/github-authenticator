@@ -67,7 +67,7 @@ public class GithubAuthenticatorRequestHandler implements AuthenticatorRequestHa
         String redirectUri = createRedirectUri();
         String state = UUID.randomUUID().toString();
         Map<String, Collection<String>> queryStringArguments = new LinkedHashMap<>(5);
-        Set<String> scopes = new LinkedHashSet<>(); // TODO: Set initial capacity
+        Set<String> scopes = new LinkedHashSet<>(14);
 
         _config.getSessionManager().put(Attribute.of("state", state));
 
