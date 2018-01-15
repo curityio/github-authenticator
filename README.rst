@@ -34,7 +34,7 @@ To install this plug-in, either download a binary version available from the `re
 For a more detailed explanation of installing plug-ins, refer to the `Curity developer guide <https://developer.curity.io/docs/latest/developer-guide/plugins/index.html#plugin-installation>`_.
 
 Creating an App in GitHub
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As `described in the GitHub documentation <https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app>`_, You can `create and register <https://github.com/settings/applications/new>`_ an OAuth App under your personal account or under any organization you have administrative access to.
 
@@ -50,8 +50,6 @@ Creating a new GitHub application
             :align: center
             :width: 500px
 
-Selecting to authenticate users in the new app
-
 Then, give the app a name, e.g., ``Curity-Enterprise-Integration-App``.
 
 When you view the app's configuration after creating it, you'll find the ``Client ID`` and ``Client Secret``. These will be needed later when configuring the plug-in in Curity.
@@ -64,7 +62,7 @@ URI Component                  Meaning
 ``baseUrl``                    The base URL of the server (defined on the ``System --> General`` page of the
                                admin GUI). If this value is not set, then the server scheme, name, and port should be
                                used (e.g., ``https://localhost:8443``).
-``authenticaitonEndpointPath`` The path of the authentication endpoint. In the admin GUI, this is located in the
+``authenticationEndpointPath`` The path of the authentication endpoint. In the admin GUI, this is located in the
                                authentication profile's ``Endpoints`` tab for the endpoint that has the type
                                ``auth-authentication``.
 ``githubAuthenticatorId``         This is the name given to the GitHub authenticator when defining it (e.g., ``github1``).
@@ -73,7 +71,7 @@ URI Component                  Meaning
 Once the redirect URI is updated, the app is ready to be used from Curity.
 
 Creating a GitHub Authenticator in Curity
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The easiest way to configure a new GitHub authenticator is using the Curity admin UI. The configuration for this can be downloaded as XML or CLI commands later, so only the steps to do this in the GUI will be described.
 
