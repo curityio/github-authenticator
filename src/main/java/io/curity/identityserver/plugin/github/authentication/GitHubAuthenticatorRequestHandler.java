@@ -16,7 +16,7 @@
 
 package io.curity.identityserver.plugin.github.authentication;
 
-import io.curity.identityserver.plugin.github.config.GithubAuthenticatorPluginConfig;
+import io.curity.identityserver.plugin.github.config.GitHubAuthenticatorPluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.attribute.Attribute;
@@ -40,19 +40,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static io.curity.identityserver.plugin.github.descriptor.GithubAuthenticatorPluginDescriptor.CALLBACK;
+import static io.curity.identityserver.plugin.github.descriptor.GitHubAuthenticatorPluginDescriptor.CALLBACK;
 import static se.curity.identityserver.sdk.http.RedirectStatusCode.MOVED_TEMPORARILY;
 
-public class GithubAuthenticatorRequestHandler implements AuthenticatorRequestHandler<Request>
+public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHandler<Request>
 {
-    private static final Logger _logger = LoggerFactory.getLogger(GithubAuthenticatorRequestHandler.class);
+    private static final Logger _logger = LoggerFactory.getLogger(GitHubAuthenticatorRequestHandler.class);
     private static final String AUTHORIZATION_ENDPOINT = "https://github.com/login/oauth/authorize";
 
-    private final GithubAuthenticatorPluginConfig _config;
+    private final GitHubAuthenticatorPluginConfig _config;
     private final ExceptionFactory _exceptionFactory;
     private final AuthenticatorInformationProvider _authenticatorInformationProvider;
 
-    public GithubAuthenticatorRequestHandler(GithubAuthenticatorPluginConfig config)
+    public GitHubAuthenticatorRequestHandler(GitHubAuthenticatorPluginConfig config)
     {
         _config = config;
         _exceptionFactory = config.getExceptionFactory();

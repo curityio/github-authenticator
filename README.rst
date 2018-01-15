@@ -1,10 +1,10 @@
-Github Authenticator Plug-in
+GitHub Authenticator Plug-in
 ============================
 
 .. image:: https://travis-ci.org/curityio/github-authenticator.svg?branch=dev
        :target: https://travis-ci.org/curityio/github-authenticator
 
-This project provides an opens source Github Authenticator plug-in for the Curity Identity Server. This allows an administrator to add functionality to Curity which will then enable end users to login using their Github credentials. The app that integrates with Curity may also be configured to receive the Github access token, allowing it to manage resources in a Github.
+This project provides an opens source GitHub Authenticator plug-in for the Curity Identity Server. This allows an administrator to add functionality to Curity which will then enable end users to login using their GitHub credentials. The app that integrates with Curity may also be configured to receive the GitHub access token, allowing it to manage resources in a GitHub.
 
 System Requirements
 ~~~~~~~~~~~~~~~~~~~
@@ -33,17 +33,17 @@ To install this plug-in, either download a binary version available from the `re
 
 For a more detailed explanation of installing plug-ins, refer to the `Curity developer guide <https://developer.curity.io/docs/latest/developer-guide/plugins/index.html#plugin-installation>`_.
 
-Creating an App in Github
+Creating an App in GitHub
 ~~~~~~~~~~~~~~~~~~~~~~
 
-As `described in the Github documentation <https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app>`_, You can `create and register <https://github.com/settings/applications/new>`_ an OAuth App under your personal account or under any organization you have administrative access to.
+As `described in the GitHub documentation <https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app>`_, You can `create and register <https://github.com/settings/applications/new>`_ an OAuth App under your personal account or under any organization you have administrative access to.
 
     .. figure:: docs/images/create-github-app1.png
             :name: new-github-app
             :align: center
             :width: 500px
 
-Creating a new Github application
+Creating a new GitHub application
 
     .. figure:: docs/images/create-github-app2.png
             :name: create-github-app
@@ -56,7 +56,7 @@ Then, give the app a name, e.g., ``Curity-Enterprise-Integration-App``.
 
 When you view the app's configuration after creating it, you'll find the ``Client ID`` and ``Client Secret``. These will be needed later when configuring the plug-in in Curity.
 
-Github will also display the Authorization callback URL in the new app's configuration. This needs to match the yet-to-be-created Github authenticator instance in Curity. The default will not work, and, if used, will result in an error. This should be updated to some URL that follows the pattern ``$baseUrl/$authenticationEndpointPath/$githubAuthnticatorId/callback``, where each of these URI components has the following meaning:
+GitHub will also display the Authorization callback URL in the new app's configuration. This needs to match the yet-to-be-created GitHub authenticator instance in Curity. The default will not work, and, if used, will result in an error. This should be updated to some URL that follows the pattern ``$baseUrl/$authenticationEndpointPath/$githubAuthnticatorId/callback``, where each of these URI components has the following meaning:
 
 ============================== =========================================================================================
 URI Component                  Meaning
@@ -67,32 +67,32 @@ URI Component                  Meaning
 ``authenticaitonEndpointPath`` The path of the authentication endpoint. In the admin GUI, this is located in the
                                authentication profile's ``Endpoints`` tab for the endpoint that has the type
                                ``auth-authentication``.
-``githubAuthenticatorId``         This is the name given to the Github authenticator when defining it (e.g., ``github1``).
+``githubAuthenticatorId``         This is the name given to the GitHub authenticator when defining it (e.g., ``github1``).
 ============================== =========================================================================================
 
 Once the redirect URI is updated, the app is ready to be used from Curity.
 
-Creating a Github Authenticator in Curity
+Creating a GitHub Authenticator in Curity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The easiest way to configure a new Github authenticator is using the Curity admin UI. The configuration for this can be downloaded as XML or CLI commands later, so only the steps to do this in the GUI will be described.
+The easiest way to configure a new GitHub authenticator is using the Curity admin UI. The configuration for this can be downloaded as XML or CLI commands later, so only the steps to do this in the GUI will be described.
 
 1. Go to the ``Authenticators`` page of the authentication profile wherein the authenticator instance should be created.
 2. Click the ``New Authenticator`` button.
-3. Enter a name (e.g., ``github1``). This name needs to match the URI component in the callback URI set in the Box app.
-4. For the type, pick the ``Github`` option:
+3. Enter a name (e.g., ``github1``). This name needs to match the URI component in the callback URI set in the GitHub app.
+4. For the type, pick the ``GitHub`` option:
 
-    .. figure:: docs/images/github-authenticator-type-in-curity.png
-            :align: center
-            :width: 600px
+.. figure:: docs/images/github-authenticator-type-in-curity.png
+        :align: center
+        :width: 600px
 
-5. On the next page, you can define all of the standard authenticator configuration options like any previous authenticator that should run, the resulting ACR, transformers that should executed, etc. At the bottom of the configuration page, the Github-specific options can be found.
+5. On the next page, you can define all of the standard authenticator configuration options like any previous authenticator that should run, the resulting ACR, transformers that should executed, etc. At the bottom of the configuration page, the GitHub-specific options can be found.
 
 .. note::
 
-The Github-specific configuration is generated dynamically based on the `configuration model defined in the Java interface <https://github.com/curityio/github-authenticator/blob/master/src/main/java/io/curity/identityserver/plugin/github/config/GithubAuthenticatorPluginConfig.java>`_.
+The GitHub-specific configuration is generated dynamically based on the `configuration model defined in the Java interface <https://github.com/curityio/github-authenticator/blob/master/src/main/java/io/curity/identityserver/plugin/github/config/GitHubAuthenticatorPluginConfig.java>`_.
 
-6. Certain required and optional configuration settings may be provided. One of these is the ``HTTP Client`` setting. This is the HTTP client that will be used to communicate with the Box OAuth server's token and user info endpoints. To define this, do the following:
+6. Certain required and optional configuration settings may be provided. One of these is the ``HTTP Client`` setting. This is the HTTP client that will be used to communicate with the GitHub OAuth server's token and user info endpoints. To define this, do the following:
 
     A. click the ``Facilities`` button at the top-right of the screen.
     B. Next to ``HTTP``, click ``New``.
@@ -103,13 +103,13 @@ The Github-specific configuration is generated dynamically based on the `configu
                 :align: center
                 :width: 400px
 
-7. Back in the Github authenticator instance that you started to define, select the new HTTP client from the dropdown.
+7. Back in the GitHub authenticator instance that you started to define, select the new HTTP client from the dropdown.
 
        .. figure:: docs/images/http-client.png
 
-8. In the ``Client ID`` textfield, enter the client ID from the Github app configuration.
+8. In the ``Client ID`` textfield, enter the client ID from the GitHub app configuration.
 9. Also enter the matching ``Client Secret``.
-10. If you have enabled any scopes or wish to limit the scopes that Curity will request of Github, toggle on the desired scopes (e.g., ``Manage Organization`` or ``Gists``).
+10. If you have enabled any scopes or wish to limit the scopes that Curity will request of GitHub, toggle on the desired scopes (e.g., ``Manage Organization`` or ``Gists``).
 
 Once all of these changes are made, they will be staged, but not committed (i.e., not running). To make them active, click the ``Commit`` menu option in the ``Changes`` menu. Optionally enter a comment in the ``Deploy Changes`` dialogue and click ``OK``.
 

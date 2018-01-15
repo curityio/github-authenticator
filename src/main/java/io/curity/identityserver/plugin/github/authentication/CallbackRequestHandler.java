@@ -16,7 +16,7 @@
 
 package io.curity.identityserver.plugin.github.authentication;
 
-import io.curity.identityserver.plugin.github.config.GithubAuthenticatorPluginConfig;
+import io.curity.identityserver.plugin.github.config.GitHubAuthenticatorPluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.Nullable;
@@ -57,12 +57,12 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
     private static final Logger _logger = LoggerFactory.getLogger(CallbackRequestHandler.class);
 
     private final ExceptionFactory _exceptionFactory;
-    private final GithubAuthenticatorPluginConfig _config;
+    private final GitHubAuthenticatorPluginConfig _config;
     private final WebServiceClientFactory _webServiceClientFactory;
     private final AuthenticatorInformationProvider _authenticatorInformationProvider;
     private final Json _json;
 
-    public CallbackRequestHandler(GithubAuthenticatorPluginConfig config)
+    public CallbackRequestHandler(GitHubAuthenticatorPluginConfig config)
     {
         _exceptionFactory = config.getExceptionFactory();
         _config = config;

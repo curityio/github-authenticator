@@ -17,8 +17,8 @@
 package io.curity.identityserver.plugin.github.descriptor;
 
 import io.curity.identityserver.plugin.github.authentication.CallbackRequestHandler;
-import io.curity.identityserver.plugin.github.authentication.GithubAuthenticatorRequestHandler;
-import io.curity.identityserver.plugin.github.config.GithubAuthenticatorPluginConfig;
+import io.curity.identityserver.plugin.github.authentication.GitHubAuthenticatorRequestHandler;
+import io.curity.identityserver.plugin.github.config.GitHubAuthenticatorPluginConfig;
 import se.curity.identityserver.sdk.authentication.AuthenticatorRequestHandler;
 import se.curity.identityserver.sdk.plugin.descriptor.AuthenticatorPluginDescriptor;
 
@@ -26,8 +26,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class GithubAuthenticatorPluginDescriptor
-        implements AuthenticatorPluginDescriptor<GithubAuthenticatorPluginConfig>
+public final class GitHubAuthenticatorPluginDescriptor
+        implements AuthenticatorPluginDescriptor<GitHubAuthenticatorPluginConfig>
 {
     public final static String CALLBACK = "callback";
 
@@ -38,9 +38,9 @@ public final class GithubAuthenticatorPluginDescriptor
     }
 
     @Override
-    public Class<? extends GithubAuthenticatorPluginConfig> getConfigurationType()
+    public Class<? extends GitHubAuthenticatorPluginConfig> getConfigurationType()
     {
-        return GithubAuthenticatorPluginConfig.class;
+        return GitHubAuthenticatorPluginConfig.class;
     }
 
     @Override
@@ -48,7 +48,7 @@ public final class GithubAuthenticatorPluginDescriptor
     {
         Map<String, Class<? extends AuthenticatorRequestHandler<?>>> handlers = new LinkedHashMap<>(2);
 
-        handlers.put("index", GithubAuthenticatorRequestHandler.class);
+        handlers.put("index", GitHubAuthenticatorRequestHandler.class);
         handlers.put(CALLBACK, CallbackRequestHandler.class);
 
         return Collections.unmodifiableMap(handlers);
