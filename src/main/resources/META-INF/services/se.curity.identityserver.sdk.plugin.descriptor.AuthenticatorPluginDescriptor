@@ -14,4 +14,4 @@
 #  limitations under the License.
 #
 
-io.curity.identityserver.plugin.github.descriptor.GithubAuthenticatorPluginDescriptor
+io.curity.identityserver.plugin.github.descriptor.GitHubAuthenticatorPluginDescriptor

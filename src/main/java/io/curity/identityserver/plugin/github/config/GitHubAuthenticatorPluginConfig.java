@@ -30,7 +30,7 @@ import se.curity.identityserver.sdk.service.authentication.AuthenticatorInformat
 import java.util.Optional;
 
 @SuppressWarnings("InterfaceNeverImplemented")
-public interface GithubAuthenticatorPluginConfig extends Configuration {
+public interface GitHubAuthenticatorPluginConfig extends Configuration {
     @Description("client id")
     String getClientId();
 
