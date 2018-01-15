@@ -243,10 +243,10 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
                         .get()
                         .response();
                 int statusCode = tokenResponse.statusCode();
-                if (tokenResponse.statusCode() == HttpStatus.NOT_FOUND.getCode()) {
+                if (tokenResponse.statusCode() != HttpStatus.NO_CONTENT.getCode()) {
                     _logger.info("Got error response from user organization membership: error = {}", statusCode);
 
-                    throw _exceptionFactory.internalServerException(ErrorCode.EXTERNAL_SERVICE_ERROR);
+                    throw _exceptionFactory.forbiddenException(ErrorCode.ACCESS_DENIED);
                 }
             });
         });
