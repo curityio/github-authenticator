@@ -87,10 +87,12 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
                 queryStringArguments, false);
     }
 
-    private void manageScopes(Set<String> scopes) {
+    private void manageScopes(Set<String> scopes)
+    {
         _config.getManageOrganization().ifPresent(manageOrganization ->
         {
-            switch (manageOrganization.getAccess()) {
+            switch (manageOrganization.getAccess())
+            {
                 case WRITE:
                     scopes.add("write:org");
                     break;
@@ -101,27 +103,35 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
                     scopes.add("read:org");
             }
         });
-        _config.getManageRepo().ifPresent(manageRepo -> {
+        _config.getManageRepo().ifPresent(manageRepo ->
+        {
             if (manageRepo.isDeploymentStatusesAccess() && manageRepo.isPublicReposAccess()
-                    && manageRepo.isInviteAccess() && manageRepo.isReadWriteCommitStatus()) {
+                    && manageRepo.isInviteAccess() && manageRepo.isReadWriteCommitStatus())
+            {
                 scopes.add("repo");
-            } else {
-                if (manageRepo.isDeploymentStatusesAccess()) {
+            } else
+            {
+                if (manageRepo.isDeploymentStatusesAccess())
+                {
                     scopes.add("repo_deployment");
                 }
-                if (manageRepo.isInviteAccess()) {
+                if (manageRepo.isInviteAccess())
+                {
                     scopes.add("repo:invite");
                 }
-                if (manageRepo.isPublicReposAccess()) {
+                if (manageRepo.isPublicReposAccess())
+                {
                     scopes.add("public_repo");
                 }
-                if (manageRepo.isReadWriteCommitStatus()) {
+                if (manageRepo.isReadWriteCommitStatus())
+                {
                     scopes.add("repo:status");
                 }
             }
         });
 
-        switch (_config.getPublicKeysAccess()) {
+        switch (_config.getPublicKeysAccess())
+        {
             case WRITE:
                 scopes.add("write:public_key");
                 break;
@@ -132,7 +142,8 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
                 scopes.add("read:public_key");
         }
 
-        switch (_config.getRepoHooksAccess()) {
+        switch (_config.getRepoHooksAccess())
+        {
             case WRITE:
                 scopes.add("write:repo_hook");
                 break;
@@ -143,35 +154,45 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
                 scopes.add("read:repo_hook");
         }
 
-        if (_config.isOrganizationHooks()) {
+        if (_config.isOrganizationHooks())
+        {
             scopes.add("admin:org_hook");
         }
-        if (_config.isGistsAccess()) {
+        if (_config.isGistsAccess())
+        {
             scopes.add("gist");
         }
-        if (_config.isNotificationsAccess()) {
+        if (_config.isNotificationsAccess())
+        {
             scopes.add("notifications");
         }
 
-        _config.getManageUser().ifPresent(manageUser -> {
-            if (manageUser.isEmailAccess() && manageUser.isFollowAccess()) {
+        _config.getManageUser().ifPresent(manageUser ->
+        {
+            if (manageUser.isEmailAccess() && manageUser.isFollowAccess())
+            {
                 scopes.add("user");
-            } else {
+            } else
+            {
                 scopes.add("read:user");
-                if (manageUser.isEmailAccess()) {
+                if (manageUser.isEmailAccess())
+                {
                     scopes.add("user:email");
                 }
-                if (manageUser.isFollowAccess()) {
+                if (manageUser.isFollowAccess())
+                {
                     scopes.add("user:follow");
                 }
             }
         });
 
-        if (_config.isDeleteRepo()) {
+        if (_config.isDeleteRepo())
+        {
             scopes.add("delete_repo");
         }
 
-        switch (_config.getGpgKeysAccess()) {
+        switch (_config.getGpgKeysAccess())
+        {
             case WRITE:
                 scopes.add("write:gpg_key");
                 break;
@@ -208,8 +229,7 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
             URI authUri = _authenticatorInformationProvider.getFullyQualifiedAuthenticationUri();
 
             return new URL(authUri.toURL(), authUri.getPath() + "/" + CALLBACK).toString();
-        }
-        catch (MalformedURLException e)
+        } catch (MalformedURLException e)
         {
             throw _exceptionFactory.internalServerException(ErrorCode.INVALID_REDIRECT_URI,
                     "Could not create redirect URI");

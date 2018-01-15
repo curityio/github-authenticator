@@ -77,8 +77,7 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         if (request.isGetRequest())
         {
             return new CallbackGetRequestModel(request);
-        }
-        else
+        } else
         {
             throw _exceptionFactory.methodNotAllowed();
         }
@@ -97,7 +96,7 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         List<Attribute> subjectAttributes = new LinkedList<>(), contextAttributes = new LinkedList<>();
         String login = userInfoResponseData.get("login");
 
-        subjectAttributes.add(Attribute.of("subject",  login));
+        subjectAttributes.add(Attribute.of("subject", login));
         subjectAttributes.add(Attribute.of("name", Name.of(userInfoResponseData.get("name"))));
         subjectAttributes.add(Attribute.of("photo", Photo.of(userInfoResponseData.get("avatar_url"), false)));
         subjectAttributes.add(Attribute.of("repos_url", userInfoResponseData.get("repos_url")));
@@ -115,11 +114,11 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         subjectAttributes.add(Attribute.of("company", userInfoResponseData.get("company")));
         subjectAttributes.add(Attribute.of("gravatar_id", userInfoResponseData.get("gravatar_id")));
         subjectAttributes.add(Attribute.of("organizations_url", userInfoResponseData.get("organizations_url")));
-        _config.getManageOrganization().ifPresent(manageOrganization -> {
-            manageOrganization.getOrganizationName().ifPresent(organizationName -> {
-                subjectAttributes.add(Attribute.of("organization_name", organizationName));
-            });
-        });
+        _config.getManageOrganization().ifPresent(manageOrganization ->
+                manageOrganization.getOrganizationName().ifPresent(organizationName ->
+                        subjectAttributes.add(Attribute.of("organization_name", organizationName))
+                )
+        );
 
         checkUserOrganizationMembership(userInfoResponseData.get("login"), accessToken.toString());
 
@@ -168,7 +167,7 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         return _json.fromJson(userInfoResponse.body(HttpResponse.asString()))
                 .entrySet().stream()
                 .filter(e -> e.getValue() instanceof String)
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> (String)e.getValue()));
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> (String) e.getValue()));
     }
 
     private WebServiceClient getWebServiceClient(String uri)
@@ -187,8 +186,7 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
             }
 
             return _webServiceClientFactory.create(h).withHost(u.getHost());
-        }
-        else
+        } else
         {
             return _webServiceClientFactory.create(u);
         }
@@ -234,22 +232,24 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
 
     private void checkUserOrganizationMembership(String username, String accessToken)
     {
-        _config.getManageOrganization().ifPresent(manageOrganization -> {
-            manageOrganization.getOrganizationName().ifPresent(organziationName -> {
-                HttpResponse tokenResponse = getWebServiceClient("https://api.github.com/orgs/" + organziationName + "/members/" + username)
-                        .request()
-                        .accept("application/json")
-                        .header("Authorization", "Bearer " + accessToken)
-                        .get()
-                        .response();
-                int statusCode = tokenResponse.statusCode();
-                if (tokenResponse.statusCode() != HttpStatus.NO_CONTENT.getCode()) {
-                    _logger.info("Got error response from user organization membership: error = {}", statusCode);
+        _config.getManageOrganization().ifPresent(manageOrganization ->
+                manageOrganization.getOrganizationName().ifPresent(organziationName ->
+                {
+                    HttpResponse tokenResponse = getWebServiceClient("https://api.github.com/orgs/" + organziationName + "/members/" + username)
+                            .request()
+                            .accept("application/json")
+                            .header("Authorization", "Bearer " + accessToken)
+                            .get()
+                            .response();
+                    int statusCode = tokenResponse.statusCode();
+                    if (tokenResponse.statusCode() != HttpStatus.NO_CONTENT.getCode())
+                    {
+                        _logger.info("Got error response from user organization membership: error = {}", statusCode);
 
-                    throw _exceptionFactory.forbiddenException(ErrorCode.ACCESS_DENIED);
-                }
-            });
-        });
+                        throw _exceptionFactory.forbiddenException(ErrorCode.ACCESS_DENIED);
+                    }
+                })
+        );
     }
 
     @Override
@@ -286,8 +286,7 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         if (sessionAttribute != null && state.equals(sessionAttribute.getValueOfType(String.class)))
         {
             _logger.debug("State matches session");
-        }
-        else
+        } else
         {
             _logger.debug("State did not match session");
 
