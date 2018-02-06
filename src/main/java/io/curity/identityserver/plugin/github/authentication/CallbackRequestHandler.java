@@ -179,11 +179,17 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         if (httpClient.isPresent())
         {
             HttpClient h = httpClient.get();
+            String configuredScheme = h.getScheme();
+            String requiredScheme = u.getScheme();
 
-            if (!Objects.equals(h.getScheme(), u.getScheme()))
+            if (!Objects.equals(configuredScheme, requiredScheme))
             {
                 _logger.debug("HTTP client was configured with the scheme {} but {} was expected. Ensure that the " +
-                        "configuration is correct.", h.getScheme(), u.getScheme());
+                        "configuration is correct.", configuredScheme, requiredScheme);
+
+                throw _exceptionFactory.internalServerException(ErrorCode.CONFIGURATION_ERROR,
+                        String.format("HTTP scheme of client is not acceptable; %s is required but %s was found",
+                                requiredScheme, configuredScheme));
             }
 
             return _webServiceClientFactory.create(h).withHost(u.getHost());
