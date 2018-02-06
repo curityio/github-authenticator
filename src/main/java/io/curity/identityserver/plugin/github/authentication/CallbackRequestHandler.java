@@ -126,8 +126,9 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         contextAttributes.add(Attribute.of("updated_at", userInfoResponseData.get("updated_at")));
         contextAttributes.add(Attribute.of("user_type", userInfoResponseData.get("type")));
         contextAttributes.add(Attribute.of("github_access_token", Objects.toString(accessToken)));
-        contextAttributes.add(Attribute.of("github_token_type", Objects.toString(tokenResponseData.get("token_type"), null)));
-        contextAttributes.add(Attribute.of("granted_scopes", Objects.toString(tokenResponseData.get("scope"), null)));
+        contextAttributes.add(Attribute.of("github_token_type", Objects.toString(tokenResponseData.get("token_type"),
+                "bearer")));
+        contextAttributes.add(Attribute.of("granted_scopes", Objects.toString(tokenResponseData.get("scope"), "")));
 
         AuthenticationAttributes authenticationAttributes = AuthenticationAttributes.of(
                 SubjectAttributes.of(login, Attributes.of(subjectAttributes)),
