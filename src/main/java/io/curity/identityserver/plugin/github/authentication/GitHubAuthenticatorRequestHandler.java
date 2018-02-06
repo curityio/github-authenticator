@@ -16,7 +16,7 @@
 
 package io.curity.identityserver.plugin.github.authentication;
 
-import io.curity.identityserver.plugin.github.config.GithubAuthenticatorPluginConfig;
+import io.curity.identityserver.plugin.github.config.GitHubAuthenticatorPluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.attribute.Attribute;
@@ -40,19 +40,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static io.curity.identityserver.plugin.github.descriptor.GithubAuthenticatorPluginDescriptor.CALLBACK;
+import static io.curity.identityserver.plugin.github.descriptor.GitHubAuthenticatorPluginDescriptor.CALLBACK;
 import static se.curity.identityserver.sdk.http.RedirectStatusCode.MOVED_TEMPORARILY;
 
-public class GithubAuthenticatorRequestHandler implements AuthenticatorRequestHandler<Request>
+public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHandler<Request>
 {
-    private static final Logger _logger = LoggerFactory.getLogger(GithubAuthenticatorRequestHandler.class);
+    private static final Logger _logger = LoggerFactory.getLogger(GitHubAuthenticatorRequestHandler.class);
     private static final String AUTHORIZATION_ENDPOINT = "https://github.com/login/oauth/authorize";
 
-    private final GithubAuthenticatorPluginConfig _config;
+    private final GitHubAuthenticatorPluginConfig _config;
     private final ExceptionFactory _exceptionFactory;
     private final AuthenticatorInformationProvider _authenticatorInformationProvider;
 
-    public GithubAuthenticatorRequestHandler(GithubAuthenticatorPluginConfig config)
+    public GitHubAuthenticatorRequestHandler(GitHubAuthenticatorPluginConfig config)
     {
         _config = config;
         _exceptionFactory = config.getExceptionFactory();
@@ -67,7 +67,7 @@ public class GithubAuthenticatorRequestHandler implements AuthenticatorRequestHa
         String redirectUri = createRedirectUri();
         String state = UUID.randomUUID().toString();
         Map<String, Collection<String>> queryStringArguments = new LinkedHashMap<>(5);
-        Set<String> scopes = new LinkedHashSet<>(); // TODO: Set initial capacity
+        Set<String> scopes = new LinkedHashSet<>(14);
 
         _config.getSessionManager().put(Attribute.of("state", state));
 
@@ -76,6 +76,19 @@ public class GithubAuthenticatorRequestHandler implements AuthenticatorRequestHa
         addQueryString(queryStringArguments, "state", state);
         addQueryString(queryStringArguments, "response_type", "code");
 
+        manageScopes(scopes);
+
+        addQueryString(queryStringArguments, "scope", String.join(" ", scopes));
+
+        _logger.debug("Redirecting to {} with query string arguments {}", AUTHORIZATION_ENDPOINT,
+                queryStringArguments);
+
+        throw _exceptionFactory.redirectException(AUTHORIZATION_ENDPOINT, MOVED_TEMPORARILY,
+                queryStringArguments, false);
+    }
+
+    private void manageScopes(Set<String> scopes)
+    {
         _config.getManageOrganization().ifPresent(manageOrganization ->
         {
             switch (manageOrganization.getAccess())
@@ -90,14 +103,106 @@ public class GithubAuthenticatorRequestHandler implements AuthenticatorRequestHa
                     scopes.add("read:org");
             }
         });
-        
-        addQueryString(queryStringArguments, "scope", String.join(" ", scopes));
+        _config.getManageRepo().ifPresent(manageRepo ->
+        {
+            if (manageRepo.isDeploymentStatusesAccess() && manageRepo.isPublicReposAccess()
+                    && manageRepo.isInviteAccess() && manageRepo.isReadWriteCommitStatus())
+            {
+                scopes.add("repo");
+            } else
+            {
+                if (manageRepo.isDeploymentStatusesAccess())
+                {
+                    scopes.add("repo_deployment");
+                }
+                if (manageRepo.isInviteAccess())
+                {
+                    scopes.add("repo:invite");
+                }
+                if (manageRepo.isPublicReposAccess())
+                {
+                    scopes.add("public_repo");
+                }
+                if (manageRepo.isReadWriteCommitStatus())
+                {
+                    scopes.add("repo:status");
+                }
+            }
+        });
 
-        _logger.debug("Redirecting to {} with query string arguments {}", AUTHORIZATION_ENDPOINT,
-                queryStringArguments);
+        switch (_config.getPublicKeysAccess())
+        {
+            case WRITE:
+                scopes.add("write:public_key");
+                break;
+            case READ_WRITE:
+                scopes.add("admin:public_key");
+                break;
+            case READ:
+                scopes.add("read:public_key");
+        }
 
-        throw _exceptionFactory.redirectException(AUTHORIZATION_ENDPOINT, MOVED_TEMPORARILY,
-                queryStringArguments, false);
+        switch (_config.getRepoHooksAccess())
+        {
+            case WRITE:
+                scopes.add("write:repo_hook");
+                break;
+            case READ_WRITE:
+                scopes.add("admin:repo_hook");
+                break;
+            case READ:
+                scopes.add("read:repo_hook");
+        }
+
+        if (_config.isOrganizationHooks())
+        {
+            scopes.add("admin:org_hook");
+        }
+        if (_config.isGistsAccess())
+        {
+            scopes.add("gist");
+        }
+        if (_config.isNotificationsAccess())
+        {
+            scopes.add("notifications");
+        }
+
+        _config.getManageUser().ifPresent(manageUser ->
+        {
+            if (manageUser.isEmailAccess() && manageUser.isFollowAccess())
+            {
+                scopes.add("user");
+            } else
+            {
+                scopes.add("read:user");
+                if (manageUser.isEmailAccess())
+                {
+                    scopes.add("user:email");
+                }
+                if (manageUser.isFollowAccess())
+                {
+                    scopes.add("user:follow");
+                }
+            }
+        });
+
+        if (_config.isDeleteRepo())
+        {
+            scopes.add("delete_repo");
+        }
+
+        switch (_config.getGpgKeysAccess())
+        {
+            case WRITE:
+                scopes.add("write:gpg_key");
+                break;
+            case READ_WRITE:
+                scopes.add("admin:gpg_key");
+                break;
+            case READ:
+                scopes.add("read:gpg_key");
+        }
+
     }
 
     @Override
@@ -124,8 +229,7 @@ public class GithubAuthenticatorRequestHandler implements AuthenticatorRequestHa
             URI authUri = _authenticatorInformationProvider.getFullyQualifiedAuthenticationUri();
 
             return new URL(authUri.toURL(), authUri.getPath() + "/" + CALLBACK).toString();
-        }
-        catch (MalformedURLException e)
+        } catch (MalformedURLException e)
         {
             throw _exceptionFactory.internalServerException(ErrorCode.INVALID_REDIRECT_URI,
                     "Could not create redirect URI");
