@@ -240,9 +240,10 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
     private void checkUserOrganizationMembership(String username, String accessToken)
     {
         _config.getManageOrganization().ifPresent(manageOrganization ->
-                manageOrganization.getOrganizationName().ifPresent(organziationName ->
+                manageOrganization.getOrganizationName().ifPresent(organizationName ->
                 {
-                    HttpResponse tokenResponse = getWebServiceClient("https://api.github.com/orgs/" + organziationName + "/members/" + username)
+                    HttpResponse tokenResponse = getWebServiceClient("https://api.github.com/orgs/" +
+                            organizationName + "/members/" + username)
                             .request()
                             .accept("application/json")
                             .header("Authorization", "Bearer " + accessToken)
