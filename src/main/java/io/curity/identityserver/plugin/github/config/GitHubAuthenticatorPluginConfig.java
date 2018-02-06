@@ -30,7 +30,8 @@ import se.curity.identityserver.sdk.service.authentication.AuthenticatorInformat
 import java.util.Optional;
 
 @SuppressWarnings("InterfaceNeverImplemented")
-public interface GitHubAuthenticatorPluginConfig extends Configuration {
+public interface GitHubAuthenticatorPluginConfig extends Configuration
+{
     @Description("client id")
     String getClientId();
 
@@ -42,11 +43,13 @@ public interface GitHubAuthenticatorPluginConfig extends Configuration {
 
     WebServiceClientFactory getWebServiceClientFactory();
 
-    enum Access {
+    enum Access
+    {
         NONE, WRITE, READ, READ_WRITE
     }
 
-    interface ManageOrganization {
+    interface ManageOrganization
+    {
         @Description("Name of the organization to check that the user is a member of")
         Optional<String> getOrganizationName();
 
@@ -58,20 +61,29 @@ public interface GitHubAuthenticatorPluginConfig extends Configuration {
     @Description("Enable the application to manage repositories in GitHub")
     Optional<ManageRepo> getManageRepo();
 
-    interface ManageRepo {
-        @Description("Request a scope (repo:status) that grants read/write access to public and private repository commit statuses. This scope is only necessary to grant other users or services access to private repository commit statuses without granting access to the code.")
+    interface ManageRepo
+    {
+        @Description("Request a scope (repo:status) that grants read/write access to public and private repository " +
+                "commit statuses. This scope is only necessary to grant other users or services access to private " +
+                "repository commit statuses without granting access to the code.")
         @DefaultBoolean(true)
         boolean isReadWriteCommitStatus();
 
-        @Description("Request a scope (repo_deployment) that grants access to deployment statuses for public and private repositories. This scope is only necessary to grant other users or services access to deployment statuses, without granting access to the code.")
+        @Description("Request a scope (repo_deployment) that grants access to deployment statuses for public and " +
+                "private repositories. This scope is only necessary to grant other users or services access to " +
+                "deployment statuses, without granting access to the code.")
         @DefaultBoolean(true)
         boolean isDeploymentStatusesAccess();
 
-        @Description("Request a scope (public_repo) that grants read/write access to code, commit statuses, collaborators, and deployment statuses for public repositories and organizations. Also required for starring public repositories.")
+        @Description("Request a scope (public_repo) that grants read/write access to code, commit statuses, " +
+                "collaborators, and deployment statuses for public repositories and organizations. Also required for " +
+                "starring public repositories.")
         @DefaultBoolean(true)
         boolean isPublicReposAccess();
 
-        @Description("Request a scope (repo:invite) that grants accept/decline abilities for invitations to collaborate on a repository. This scope is only necessary to grant other users or services access to invites without granting access to the code.")
+        @Description("Request a scope (repo:invite) that grants accept/decline abilities for invitations to " +
+                "collaborate on a repository. This scope is only necessary to grant other users or services access to" +
+                " invites without granting access to the code.")
         @DefaultBoolean(true)
         boolean isInviteAccess();
     }
@@ -84,7 +96,8 @@ public interface GitHubAuthenticatorPluginConfig extends Configuration {
     @DefaultEnum("NONE")
     Access getRepoHooksAccess();
 
-    @Description("Request a scope (admin:org_hook) that grants read, write, ping, and delete access to organization hooks.")
+    @Description("Request a scope (admin:org_hook) that grants read, write, ping, and delete access to organization " +
+            "hooks.")
     @DefaultBoolean(false)
     boolean isOrganizationHooks();
 
@@ -99,7 +112,8 @@ public interface GitHubAuthenticatorPluginConfig extends Configuration {
     @Description("Enable the application to manage user in GitHub")
     Optional<ManageUser> getManageUser();
 
-    interface ManageUser {
+    interface ManageUser
+    {
         @Description("Request a scope (user:email) that grants read access to a user's email addresses")
         @DefaultBoolean(false)
         boolean isEmailAccess();
@@ -108,7 +122,6 @@ public interface GitHubAuthenticatorPluginConfig extends Configuration {
         @DefaultBoolean(false)
         boolean isFollowAccess();
     }
-
 
     @Description("Request a scope (delete_repo) that grants access to delete adminable repositories.")
     @DefaultBoolean(false)

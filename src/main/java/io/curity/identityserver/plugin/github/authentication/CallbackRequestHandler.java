@@ -77,7 +77,8 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         if (request.isGetRequest())
         {
             return new CallbackGetRequestModel(request);
-        } else
+        }
+        else
         {
             throw _exceptionFactory.methodNotAllowed();
         }
@@ -114,6 +115,7 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         subjectAttributes.add(Attribute.of("company", userInfoResponseData.get("company")));
         subjectAttributes.add(Attribute.of("gravatar_id", userInfoResponseData.get("gravatar_id")));
         subjectAttributes.add(Attribute.of("organizations_url", userInfoResponseData.get("organizations_url")));
+
         _config.getManageOrganization().ifPresent(manageOrganization ->
                 manageOrganization.getOrganizationName().ifPresent(organizationName ->
                         subjectAttributes.add(Attribute.of("organization_name", organizationName))
@@ -193,7 +195,8 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
             }
 
             return _webServiceClientFactory.create(h).withHost(u.getHost());
-        } else
+        }
+        else
         {
             return _webServiceClientFactory.create(u);
         }
@@ -224,7 +227,8 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         return _json.fromJson(body);
     }
 
-    private static Map<String, String> createPostData(String clientId, String clientSecret, String code, String callbackUri)
+    private static Map<String, String> createPostData(String clientId, String clientSecret, String code,
+                                                      String callbackUri)
     {
         Map<String, String> data = new HashMap<>(5);
 
@@ -294,7 +298,8 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         if (sessionAttribute != null && state.equals(sessionAttribute.getValueOfType(String.class)))
         {
             _logger.debug("State matches session");
-        } else
+        }
+        else
         {
             _logger.debug("State did not match session");
 

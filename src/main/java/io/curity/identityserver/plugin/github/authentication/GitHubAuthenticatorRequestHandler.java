@@ -98,8 +98,8 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
                     break;
                 case READ_WRITE:
                     scopes.add("admin:org");
-                default:
                 case READ:
+                default:
                     scopes.add("read:org");
             }
         });
@@ -109,20 +109,24 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
                     && manageRepo.isInviteAccess() && manageRepo.isReadWriteCommitStatus())
             {
                 scopes.add("repo");
-            } else
+            }
+            else
             {
                 if (manageRepo.isDeploymentStatusesAccess())
                 {
                     scopes.add("repo_deployment");
                 }
+
                 if (manageRepo.isInviteAccess())
                 {
                     scopes.add("repo:invite");
                 }
+
                 if (manageRepo.isPublicReposAccess())
                 {
                     scopes.add("public_repo");
                 }
+
                 if (manageRepo.isReadWriteCommitStatus())
                 {
                     scopes.add("repo:status");
@@ -158,10 +162,12 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
         {
             scopes.add("admin:org_hook");
         }
+
         if (_config.isGistsAccess())
         {
             scopes.add("gist");
         }
+
         if (_config.isNotificationsAccess())
         {
             scopes.add("notifications");
@@ -172,13 +178,16 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
             if (manageUser.isEmailAccess() && manageUser.isFollowAccess())
             {
                 scopes.add("user");
-            } else
+            }
+            else
             {
                 scopes.add("read:user");
+
                 if (manageUser.isEmailAccess())
                 {
                     scopes.add("user:email");
                 }
+
                 if (manageUser.isFollowAccess())
                 {
                     scopes.add("user:follow");
@@ -202,7 +211,6 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
             case READ:
                 scopes.add("read:gpg_key");
         }
-
     }
 
     @Override
@@ -229,7 +237,8 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
             URI authUri = _authenticatorInformationProvider.getFullyQualifiedAuthenticationUri();
 
             return new URL(authUri.toURL(), authUri.getPath() + "/" + CALLBACK).toString();
-        } catch (MalformedURLException e)
+        }
+        catch (MalformedURLException e)
         {
             throw _exceptionFactory.internalServerException(ErrorCode.INVALID_REDIRECT_URI,
                     "Could not create redirect URI");
