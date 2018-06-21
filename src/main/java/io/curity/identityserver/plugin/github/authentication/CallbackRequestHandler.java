@@ -131,8 +131,7 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
             throw _exceptionFactory.internalServerException(ErrorCode.EXTERNAL_SERVICE_ERROR);
         }
 
-        HttpResponse userInfoResponse = getWebServiceClient("https://api.github.com/")
-                .withPath("user")
+        HttpResponse userInfoResponse = getWebServiceClient("https://api.github.com/user")
                 .request()
                 .accept("application/json")
                 .header("Authorization", "Bearer " + accessToken.toString())
@@ -178,7 +177,7 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
                                 requiredScheme, configuredScheme));
             }
 
-            return _webServiceClientFactory.create(h).withHost(u.getHost());
+            return _webServiceClientFactory.create(h).withHost(u.getHost()).withPath(u.getPath());
         }
         else
         {
@@ -188,8 +187,7 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
 
     private Map<String, Object> redeemCodeForTokens(CallbackGetRequestModel requestModel)
     {
-        HttpResponse tokenResponse = getWebServiceClient("https://github.com/")
-                .withPath("login/oauth/access_token")
+        HttpResponse tokenResponse = getWebServiceClient("https://github.com/login/oauth/access_token")
                 .request()
                 .contentType("application/x-www-form-urlencoded")
                 .accept("application/json")
@@ -231,8 +229,8 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         _config.getManageOrganization().ifPresent(manageOrganization ->
                 manageOrganization.getOrganizationName().ifPresent(organizationName ->
                 {
-                    HttpResponse tokenResponse = getWebServiceClient("https://api.github.com/")
-                            .withPath("orgs/" + organizationName + "/members/" + username)
+                    HttpResponse tokenResponse = getWebServiceClient("https://api.github.com/orgs/" +
+                            organizationName + "/members/" + username)
                             .request()
                             .accept("application/json")
                             .header("Authorization", "Bearer " + accessToken)
