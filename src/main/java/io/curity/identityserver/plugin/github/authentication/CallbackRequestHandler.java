@@ -25,8 +25,6 @@ import se.curity.identityserver.sdk.attribute.Attributes;
 import se.curity.identityserver.sdk.attribute.AuthenticationAttributes;
 import se.curity.identityserver.sdk.attribute.ContextAttributes;
 import se.curity.identityserver.sdk.attribute.SubjectAttributes;
-import se.curity.identityserver.sdk.attribute.scim.v2.Name;
-import se.curity.identityserver.sdk.attribute.scim.v2.multivalued.Photo;
 import se.curity.identityserver.sdk.authentication.AuthenticationResult;
 import se.curity.identityserver.sdk.authentication.AuthenticatorRequestHandler;
 import se.curity.identityserver.sdk.errors.ErrorCode;
@@ -98,23 +96,8 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         String login = userInfoResponseData.get("login");
 
         subjectAttributes.add(Attribute.of("subject", login));
-        subjectAttributes.add(Attribute.of("name", Name.of(userInfoResponseData.get("name"))));
-        subjectAttributes.add(Attribute.of("photo", Photo.of(userInfoResponseData.get("avatar_url"), false)));
-        subjectAttributes.add(Attribute.of("repos_url", userInfoResponseData.get("repos_url")));
-        subjectAttributes.add(Attribute.of("gists_url", userInfoResponseData.get("gists_url")));
-        subjectAttributes.add(Attribute.of("following_url", userInfoResponseData.get("following_url")));
-        subjectAttributes.add(Attribute.of("bio", userInfoResponseData.get("bio")));
-        subjectAttributes.add(Attribute.of("starred_url", userInfoResponseData.get("starred_url")));
-        subjectAttributes.add(Attribute.of("blog", userInfoResponseData.get("blog")));
-        subjectAttributes.add(Attribute.of("url", userInfoResponseData.get("url")));
-        subjectAttributes.add(Attribute.of("subscriptions_url", userInfoResponseData.get("subscriptions_url")));
-        subjectAttributes.add(Attribute.of("received_events_url", userInfoResponseData.get("received_events_url")));
-        subjectAttributes.add(Attribute.of("events_url", userInfoResponseData.get("events_url")));
-        subjectAttributes.add(Attribute.of("html_url", userInfoResponseData.get("html_url")));
-        subjectAttributes.add(Attribute.of("location", userInfoResponseData.get("location")));
-        subjectAttributes.add(Attribute.of("company", userInfoResponseData.get("company")));
-        subjectAttributes.add(Attribute.of("gravatar_id", userInfoResponseData.get("gravatar_id")));
-        subjectAttributes.add(Attribute.of("organizations_url", userInfoResponseData.get("organizations_url")));
+        subjectAttributes.addAll(Attributes.fromMap(userInfoResponseData).stream().collect(Collectors.toList()));
+
 
         _config.getManageOrganization().ifPresent(manageOrganization ->
                 manageOrganization.getOrganizationName().ifPresent(organizationName ->
@@ -194,7 +177,7 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
                                 requiredScheme, configuredScheme));
             }
 
-            return _webServiceClientFactory.create(h).withHost(u.getHost());
+            return _webServiceClientFactory.create(h).withHost(u.getHost()).withPath(u.getPath());
         }
         else
         {
