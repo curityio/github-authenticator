@@ -28,6 +28,7 @@ import se.curity.identityserver.sdk.attribute.SubjectAttributes;
 import se.curity.identityserver.sdk.authentication.AuthenticationResult;
 import se.curity.identityserver.sdk.authentication.AuthenticatorRequestHandler;
 import se.curity.identityserver.sdk.errors.ErrorCode;
+import se.curity.identityserver.sdk.http.HttpRequest;
 import se.curity.identityserver.sdk.http.HttpResponse;
 import se.curity.identityserver.sdk.http.HttpStatus;
 import se.curity.identityserver.sdk.service.ExceptionFactory;
@@ -48,6 +49,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static io.curity.identityserver.plugin.github.authentication.RedirectUriUtil.createRedirectUri;
 import static se.curity.identityserver.sdk.http.HttpRequest.createFormUrlEncodedBodyProcessor;
 
 public class CallbackRequestHandler implements AuthenticatorRequestHandler<CallbackGetRequestModel>
@@ -187,12 +189,15 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
 
     private Map<String, Object> redeemCodeForTokens(CallbackGetRequestModel requestModel)
     {
+        HttpRequest.BodyProcessor requestBody = createFormUrlEncodedBodyProcessor(createPostData(_config.getClientId(),
+                _config.getClientSecret(),
+                requestModel.getCode(), createRedirectUri(_authenticatorInformationProvider, _exceptionFactory)));
+
         HttpResponse tokenResponse = getWebServiceClient("https://github.com/login/oauth/access_token")
                 .request()
                 .contentType("application/x-www-form-urlencoded")
                 .accept("application/json")
-                .body(createFormUrlEncodedBodyProcessor(createPostData(_config.getClientId(),
-                        _config.getClientSecret(), requestModel.getCode(), requestModel.getRequestUrl())))
+                .body(requestBody)
                 .post()
                 .response();
         int statusCode = tokenResponse.statusCode();
