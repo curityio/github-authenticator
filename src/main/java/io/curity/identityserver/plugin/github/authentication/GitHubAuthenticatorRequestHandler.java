@@ -22,15 +22,11 @@ import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.attribute.Attribute;
 import se.curity.identityserver.sdk.authentication.AuthenticationResult;
 import se.curity.identityserver.sdk.authentication.AuthenticatorRequestHandler;
-import se.curity.identityserver.sdk.errors.ErrorCode;
 import se.curity.identityserver.sdk.service.ExceptionFactory;
 import se.curity.identityserver.sdk.service.authentication.AuthenticatorInformationProvider;
 import se.curity.identityserver.sdk.web.Request;
 import se.curity.identityserver.sdk.web.Response;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -40,7 +36,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static io.curity.identityserver.plugin.github.descriptor.GitHubAuthenticatorPluginDescriptor.CALLBACK;
+import static io.curity.identityserver.plugin.github.authentication.RedirectUriUtil.createRedirectUri;
 import static se.curity.identityserver.sdk.http.RedirectStatusCode.MOVED_TEMPORARILY;
 
 public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHandler<Request>
@@ -64,7 +60,7 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
     {
         _logger.info("GET request received for authentication authentication");
 
-        String redirectUri = createRedirectUri();
+        String redirectUri = createRedirectUri(_authenticatorInformationProvider, _exceptionFactory);
         String state = UUID.randomUUID().toString();
         Map<String, Collection<String>> queryStringArguments = new LinkedHashMap<>(5);
         Set<String> scopes = new LinkedHashSet<>(14);
@@ -228,20 +224,5 @@ public class GitHubAuthenticatorRequestHandler implements AuthenticatorRequestHa
     private static void addQueryString(Map<String, Collection<String>> queryStringArguments, String key, Object value)
     {
         queryStringArguments.put(key, Collections.singleton(value.toString()));
-    }
-
-    private String createRedirectUri()
-    {
-        try
-        {
-            URI authUri = _authenticatorInformationProvider.getFullyQualifiedAuthenticationUri();
-
-            return new URL(authUri.toURL(), authUri.getPath() + "/" + CALLBACK).toString();
-        }
-        catch (MalformedURLException e)
-        {
-            throw _exceptionFactory.internalServerException(ErrorCode.INVALID_REDIRECT_URI,
-                    "Could not create redirect URI");
-        }
     }
 }
