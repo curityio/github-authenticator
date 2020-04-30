@@ -3,6 +3,12 @@ GitHub Authenticator Plug-in
 
 .. image:: https://travis-ci.org/curityio/github-authenticator.svg?branch=master
        :target: https://travis-ci.org/curityio/github-authenticator
+       
+.. image:: https://curity.io/assets/images/badges/github-authenticator-quality.svg
+       :target: https://curity.io/resources/code-examples/status/
+       
+.. image:: https://curity.io/assets/images/badges/github-authenticator-availability.svg
+       :target: https://curity.io/resources/code-examples/status/
 
 This project provides an opens source GitHub Authenticator plug-in for the Curity Identity Server. This allows an administrator to add functionality to Curity which will then enable end users to login using their GitHub credentials. The app that integrates with Curity may also be configured to receive the GitHub access token, allowing it to manage resources in a GitHub.
 
