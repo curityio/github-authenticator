@@ -1,9 +1,6 @@
 GitHub Authenticator Plug-in
 ============================
-
-.. image:: https://travis-ci.org/curityio/github-authenticator.svg?branch=master
-       :target: https://travis-ci.org/curityio/github-authenticator
-       
+   
 .. image:: https://curity.io/assets/images/badges/github-authenticator-quality.svg
        :target: https://curity.io/resources/code-examples/status/
        
