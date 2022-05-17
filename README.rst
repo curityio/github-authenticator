@@ -8,18 +8,18 @@ GitHub Authenticator Plug-in
     :target: https://curity.io/resources/code-examples/status/
 
 
-This project provides an opens source GitHub Authenticator plug-in for the Curity Identity Server. This allows an administrator to add functionality to Curity which will then enable end users to login using their GitHub credentials. The app that integrates with Curity may also be configured to receive the GitHub access token, allowing it to manage resources in a GitHub.
+This project provides an opens source GitHub Authenticator plug-in for the Curity Identity Server. This allows an administrator to add functionality to the Curity Identity Server which will then enable end users to login using their GitHub credentials. The app that integrates with the Curity Identity Server may also be configured to receive the GitHub access token, allowing it to manage resources in a GitHub.
 
 System Requirements
 ~~~~~~~~~~~~~~~~~~~
 
-* Curity Identity Server 2.4.0 and `its system requirements <https://developer.curity.io/docs/latest/system-admin-guide/system-requirements.html>`_
+* Curity Identity Server 7.1.0 and `its system requirements <https://developer.curity.io/docs/latest/system-admin-guide/system-requirements.html>`_
 
 Requirements for Building from Source
 """""""""""""""""""""""""""""""""""""
 
 * Maven 3
-* Java JDK v. 8
+* Java SDK 17 or later
 
 Compiling the Plug-in from Source
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
