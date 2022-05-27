@@ -1,0 +1,25 @@
+{
+    "name": "end-to-end-tests",
+    "version": "1.0.0",
+    "description": "End-to-end tests of the GitHub authenticator",
+    "main": "index.ts",
+    "scripts": {
+        "testApp.build": "cd node_modules/@curity/oauth-assistant && npm i",
+        "testApp.start": "cd node_modules/@curity/oauth-assistant && npm start",
+        "cypress.open": "cypress open",
+        "cypress.run": "cypress run --browser chrome",
+        "cypress.run.headless": "cypress run --headless --browser chrome",
+        "merge-report": "npx mochawesome-merge cypress/reports/separate-reports/*.json > cypress/reports/index.json",
+        "generate-report": "npx marge --reportDir cypress/reports/ cypress/reports/index.json",
+        "cypress.generate.reports": "npm run merge-report; npm run generate-report"
+    },
+    "author": "Curity AB",
+    "license": "Apache-2.0",
+    "dependencies": {
+    },
+    "devDependencies": {
+        "@curity/oauth-assistant": "1.7.1",
+        "cypress": "^9.7.0",
+        "mochawesome": "^7.1.3"
+    }
+}

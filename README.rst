@@ -117,6 +117,55 @@ Once all of these changes are made, they will be staged, but not committed (i.e.
 
 Once the configuration is committed and running, the authenticator can be used like any other.
 
+Testing
+~~~~~~~
+
+The plugin is tested using end to end tests that run on a GitHub Actions workflow. The test starts up an instance of the
+Curity Identity Server, a simple SPA and uses Cypress to perform a login flow.
+
+Testing Locally with Cypress
+""""""""""""""""""""""""""""
+
+To run the test suite locally, first ensure that you have an instance of the Curity Identity Server running with the plugin
+installed and using the configuration found in `tests/idsvr/config.xml`. Next install Cypress and run the example SPA using
+the following commands. ::
+
+    cd tests
+    npm i
+    npm run testApp.build
+    npm run testApp.start
+
+You can then open the Cypress app to run tests with ``npm run cypress.open`` or run the headless version of the tests with
+``npm run cypress.run``.
+
+Run the GitHub Actions Workflow Locally
+"""""""""""""""""""""""""""""""""""""""
+
+The GitHub Actions workflow can be run locally using a tool called `act <https://github.com/nektos/act>`_. In order to run
+the workflow you will need:
+
+- Install the ``act`` tool.
+- Copy the ``tests/workflows/secrets.template`` file into ``.secrets`` file in the root folder. Set the values.
+
+========================= ================================================================================================
+Entry                     Meaning
+------------------------- ------------------------------------------------------------------------------------------------
+``idsvr_license``           The JWT containing the Curity Identity Server license.
+``github_client_id``        The ID of a GitHub application that will be used to run the authenticator in the test.
+``github_client_secret``    The secret of the GitHub application that will be used to run the authenticator in the test.
+========================= ================================================================================================
+
+- Build the docker container that is used to run the tests locally. From ``tests/workflows`` run::
+
+    docker build -t act-ubuntu-for-cypress .
+
+- Run the workflow using the built container::
+
+    act -P ubuntu-latest=act-ubuntu-for-cypress -b workflow_dispatch
+
+The ``-b`` switch is used to mount the repository in the container instead of copying it. Thanks to that, test reports will
+be available in ``tests/cypress/reports``.
+
 License
 ~~~~~~~
 

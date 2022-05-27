@@ -1,0 +1,45 @@
+name: end-to-end-github-authenticator-tests
+on: workflow_dispatch
+jobs:
+  run-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Java with maven cache
+        if: ${{ !env.ACT }} # Run only in GitHub
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: maven
+
+      - name: Build plugin
+        run: mvn package
+
+      - name: Move plugin jar to volume dir
+        run: mv target/*.jar plugin/
+
+      - name: Run idsvr
+        env:
+          TEST_LICENSE: ${{ secrets.idsvr_license }}
+          GITHUB_CLIENT_ID: ${{ secrets.github_client_id }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.github_client_secret }}
+        run: docker run -d --rm -e PASSWORD=Password1 -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e TEST_LICENSE=$TEST_LICENSE -v $GITHUB_WORKSPACE/plugin:/opt/idsvr/usr/share/plugins/github-authenticator -v $GITHUB_WORKSPACE/tests/idsvr/config.xml:/opt/idsvr/etc/init/config.xml -p 6749:6749 -p 8443:8443 curity.azurecr.io/curity/idsvr:latest
+
+      - name: Check if idsvr started
+        run: ./tests/workflows/utils/healthCheckIdsvr.sh
+        env:
+          ADMIN_USER: admin
+          ADMIN_PASSWORD: Password1
+          WAIT_TIMEOUT: 60
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v2
+        with:
+          build: npm run testApp.build
+          start: npm run testApp.start
+          working-directory: tests
+          wait-on: 'http://localhost:8080'
+          wait-on-timeout: 60
