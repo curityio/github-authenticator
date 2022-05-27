@@ -275,7 +275,7 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
             _logger.warn("Got an error from StackExchange: {} - {}", requestModel.getError(),
                     requestModel.getErrorDescription());
 
-            throw _exceptionFactory.externalServiceException("Login with StackExchange failed");
+            throw _exceptionFactory.externalServiceException("Login with GitHub failed");
         }
     }
 
