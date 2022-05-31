@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Curity AB
+ * Copyright 2022 Curity AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import {
-  updateStringSetting,
-  clickElement
-} from './spa';
-
 describe('GitHub Authenticator tests', () => {
   it('Verify that GitHub Authenticator properly initializes authorization request', () => {
 
-    cy.visit("http://localhost:8080");
+    const authorizationURL = new URL('https://localhost:8443/oauth/v2/oauth-authorize')
+    const params = authorizationURL.searchParams
 
-    updateStringSetting("issuer", "https://localhost:8443/oauth/v2/oauth-anonymous");
+    params.append('client_id', 'oauth-assistant-client')
+    params.append('response_type', 'code')
+    params.append('redirect_uri', 'http://localhost:8080/')
+    params.append('prompt', 'login')
 
-    clickElement('#loginFlowRedirect');
+    cy.visit(authorizationURL.toString());
 
     // Verify that GitHub has returned a login form
     cy.get('#login_field')

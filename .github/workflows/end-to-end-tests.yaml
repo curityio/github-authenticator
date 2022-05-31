@@ -21,14 +21,14 @@ jobs:
       - name: Move plugin jar to volume dir
         run: mv target/*.jar plugin/
 
-      - name: Run idsvr
+      - name: Start the Curity Identity Server
         env:
           TEST_LICENSE: ${{ secrets.idsvr_license }}
           GITHUB_CLIENT_ID: ${{ secrets.github_client_id }}
           GITHUB_CLIENT_SECRET: ${{ secrets.github_client_secret }}
         run: docker run -d --rm -e PASSWORD=Password1 -e GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID -e GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET -e TEST_LICENSE=$TEST_LICENSE -v $GITHUB_WORKSPACE/plugin:/opt/idsvr/usr/share/plugins/github-authenticator -v $GITHUB_WORKSPACE/tests/idsvr/config.xml:/opt/idsvr/etc/init/config.xml -p 6749:6749 -p 8443:8443 curity.azurecr.io/curity/idsvr:latest
 
-      - name: Check if idsvr started
+      - name: Wait for the Curity Identity Server
         run: ./tests/workflows/utils/healthCheckIdsvr.sh
         env:
           ADMIN_USER: admin
@@ -38,8 +38,4 @@ jobs:
       - name: Run Cypress tests
         uses: cypress-io/github-action@v2
         with:
-          build: npm run testApp.build
-          start: npm run testApp.start
           working-directory: tests
-          wait-on: 'http://localhost:8080'
-          wait-on-timeout: 60

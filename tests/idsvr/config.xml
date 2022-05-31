@@ -311,7 +311,7 @@
                 <no-authentication>true</no-authentication>
                 <redirect-uris>http://localhost:8080/</redirect-uris>
                 <proof-key>
-                  <require-proof-key>true</require-proof-key>
+                  <require-proof-key>false</require-proof-key>
                 </proof-key>
                 <refresh-token-ttl>disabled</refresh-token-ttl>
                 <user-authentication>
