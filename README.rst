@@ -117,6 +117,29 @@ Once all of these changes are made, they will be staged, but not committed (i.e.
 
 Once the configuration is committed and running, the authenticator can be used like any other.
 
+Tests
+~~~~~
+
+The plugin is tested using end to end tests that run on a GitHub Actions workflow. The test starts up an instance of the
+Curity Identity Server, a simple SPA and uses Cypress to perform a login flow.
+
+Running tests Locally with Cypress
+""""""""""""""""""""""""""""""""""
+
+To run the test suite locally, first ensure that you have an instance of the Curity Identity Server running with the plugin
+installed and using the configuration found in `tests/idsvr/config.xml`. Next install Cypress using the following commands. ::
+
+    cd tests
+    npm i
+
+You can then open the Cypress app to run tests with ``npm run cypress.open`` or run the headless version of the tests with
+``npm run cypress.run``.
+
+Running the GitHub Actions Workflow Locally
+"""""""""""""""""""""""""""""""""""""""""""
+
+To run the GitHub Actions workflow locally refer to this `README <https://github.com/curityio/github-action-utilities>`.
+
 License
 ~~~~~~~
 

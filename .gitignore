@@ -3,3 +3,9 @@ target/
 .idea/
 *.iml
 .DS_store
+
+.secrets
+utils/
+
+tests/node_modules
+tests/cypress/reports
