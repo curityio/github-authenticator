@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
+import { registerCurityCommands } from "@curity/cypress-commands"
+
+registerCurityCommands()
+
 describe('GitHub Authenticator tests', () => {
   it('Verify that GitHub Authenticator properly initializes authorization request', () => {
 
-    const authorizationURL = new URL('https://localhost:8443/oauth/v2/oauth-authorize')
-    const params = authorizationURL.searchParams
+    const parameters = {
+      baseURL: 'https://localhost:8443/oauth/v2/oauth-authorize',
+      clientID: 'oauth-assistant-client',
+      redirectURI: 'http://localhost:8080/'
+    }
 
-    params.append('client_id', 'oauth-assistant-client')
-    params.append('response_type', 'code')
-    params.append('redirect_uri', 'http://localhost:8080/')
-    params.append('prompt', 'login')
-
-    cy.visit(authorizationURL.toString());
+    cy.startAuthorization(parameters)
 
     // Verify that GitHub has returned a login form
     cy.get('#login_field')
-        .should('exist');
+        .should('exist')
   })
 
 })
