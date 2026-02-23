@@ -6,7 +6,7 @@
 
     <groupId>io.curity.identityserver.plugin</groupId>
     <artifactId>identityserver.plugins.authenticators.github</artifactId>
-    <version>1.5.0</version>
+    <version>1.6.0</version>
 
     <name>GitHub Authenticator</name>
 
@@ -21,8 +21,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
         </plugins>
@@ -32,45 +32,14 @@
         <dependency>
             <groupId>se.curity.identityserver</groupId>
             <artifactId>identityserver.sdk</artifactId>
-            <version>7.1.0</version>
+            <version>11.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.36</version>
+            <version>2.0.12</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>customer-release-repo</id>
-            <url>https://nexus.curity.se/nexus/content/repositories/customer-release-repo</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>customer-snapshot-repo</id>
-            <name>Customer Snapshot Repository</name>
-            <url>https://nexus.curity.se/nexus/content/repositories/customer-snapshot-repo/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>customer-release-repo</id>
-            <name>Customer Release Repository</name>
-            <url>https://nexus.curity.se/nexus/content/repositories/customer-release-repo/</url>
-        </repository>
-        <snapshotRepository>
-            <id>curity-snapshot-repo</id>
-            <name>Curity Nexus Snapshot Repository</name>
-            <url>https://nexus.curity.se/nexus/content/repositories/customer-snapshot-repo/</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
